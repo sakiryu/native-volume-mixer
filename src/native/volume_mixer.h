@@ -1,10 +1,16 @@
 #pragma once
 
-class IVolumeMixer
-{
-public:
-	virtual float get_volume() = 0;
-	virtual bool set_volume(float value) = 0;
+#include "ivolume_mixer.h"
 
-	virtual ~IVolumeMixer() = default;
+#include <memory>
+
+class VolumeMixer : public IVolumeMixer
+{
+	std::unique_ptr<struct NativeVolumeMixerImpl> m_volume_mixer_impl;
+
+public:
+	VolumeMixer();
+
+	float get_volume() override;
+	bool set_volume(float value) override;
 };
