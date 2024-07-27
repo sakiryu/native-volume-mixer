@@ -23,6 +23,7 @@
     <ClCompile Include="win_volume_mixer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ivolume_mixer.h" />
     <ClInclude Include="volume_mixer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

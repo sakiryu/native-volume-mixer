@@ -23,6 +23,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ivolume_mixer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="volume_mixer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
