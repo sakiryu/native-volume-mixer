@@ -1,4 +1,4 @@
-#include "volume_mixer.h"
+#include "win_volume_mixer.h"
 
 #include <stdexcept>
 
@@ -8,59 +8,55 @@
 #include <atlbase.h>
 
 // https://learn.microsoft.com/en-us/windows/win32/coreaudio/volume-controls
-
-class WinVolumeMixer : public IVolumeMixer
+struct WinVolumeMixerImpl
 {
-	CComPtr<IMMDeviceEnumerator> m_device_enumerator;
-	CComPtr<IMMDevice> m_audio_device;
-	CComPtr<IAudioEndpointVolume> m_audio_endpoint;
+	CComPtr<IAudioEndpointVolume> AudioEndpoint{};
 
-	void initialize()
+	WinVolumeMixerImpl()
 	{
 		if (auto status = CoInitialize(nullptr); FAILED(status))
 		{
 			throw std::runtime_error("Failed to initialize COM.");
 		}
 
-		if (auto status = m_device_enumerator.CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER); FAILED(status))
+		CComPtr<IMMDeviceEnumerator> device_enumerator{};
+		if (auto status = device_enumerator.CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER); FAILED(status))
 		{
 			throw std::runtime_error("Failed to enumerate audio devices.");
 		}
 
-		if (auto status = m_device_enumerator->GetDefaultAudioEndpoint(eRender, eConsole, &m_audio_device); FAILED(status))
+		CComPtr<IMMDevice> audio_device{};
+		if (auto status = device_enumerator->GetDefaultAudioEndpoint(eRender, eConsole, &audio_device); FAILED(status))
 		{
 			throw std::runtime_error("Failed to identify the default audio device.");
 		}
 
-		if (auto status = m_audio_device->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_INPROC_SERVER, nullptr, (void**)&m_audio_endpoint); FAILED(status))
+		if (auto status = audio_device->Activate(__uuidof(IAudioEndpointVolume), CLSCTX_INPROC_SERVER, nullptr, (void**)&AudioEndpoint); FAILED(status))
 		{
 			throw std::runtime_error("Failed to activate audio endpoint.");
 		}
 	}
 
-public:
-	WinVolumeMixer() :
-		m_device_enumerator{},
-		m_audio_device{},
-		m_audio_endpoint{}
-	{
-		initialize();
-	}
-
-	float get_volume() override
-	{
-		float volume_level{ .0f };
-		m_audio_endpoint->GetMasterVolumeLevelScalar(&volume_level);
-		return volume_level;
-	}
-	
-	bool set_volume(float value) override
-	{
-		return true;
-	}
-
-	~WinVolumeMixer()
+	~WinVolumeMixerImpl()
 	{
 		CoUninitialize();
 	}
 };
+
+WinVolumeMixer::WinVolumeMixer() : m_volume_mixer_impl{ std::make_unique<WinVolumeMixerImpl>() }{}
+
+float WinVolumeMixer::get_volume()
+{
+	float volume_level{ .0f };
+	m_volume_mixer_impl->AudioEndpoint->GetMasterVolumeLevelScalar(&volume_level);
+	return volume_level;
+}
+
+bool WinVolumeMixer::set_volume(float volume_level)
+{
+	if (auto status = m_volume_mixer_impl->AudioEndpoint->SetMasterVolumeLevelScalar(volume_level, nullptr); FAILED(status))
+	{
+		return false;
+	}
+	return true;
+}
