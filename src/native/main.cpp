@@ -1,5 +1,4 @@
 #include "volume_mixer.h"
-#include "volume_mixer.h"
 
 int main(int argc, char** argv)
 {
