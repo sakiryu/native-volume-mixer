@@ -1,4 +1,4 @@
-#include "win_volume_mixer.h"
+#include "volume_mixer.h"
 
 #include <stdexcept>
 
@@ -8,11 +8,11 @@
 #include <atlbase.h>
 
 // https://learn.microsoft.com/en-us/windows/win32/coreaudio/volume-controls
-struct WinVolumeMixerImpl
+struct NativeVolumeMixerImpl
 {
 	CComPtr<IAudioEndpointVolume> AudioEndpoint{};
 
-	WinVolumeMixerImpl()
+	NativeVolumeMixerImpl()
 	{
 		if (auto status = CoInitialize(nullptr); FAILED(status))
 		{
@@ -37,22 +37,22 @@ struct WinVolumeMixerImpl
 		}
 	}
 
-	~WinVolumeMixerImpl()
+	~NativeVolumeMixerImpl()
 	{
 		CoUninitialize();
 	}
 };
 
-WinVolumeMixer::WinVolumeMixer() : m_volume_mixer_impl{ std::make_unique<WinVolumeMixerImpl>() }{}
+VolumeMixer::VolumeMixer() : m_volume_mixer_impl{ std::make_unique<NativeVolumeMixerImpl>() }{}
 
-float WinVolumeMixer::get_volume()
+float VolumeMixer::get_volume()
 {
 	float volume_level{ .0f };
 	m_volume_mixer_impl->AudioEndpoint->GetMasterVolumeLevelScalar(&volume_level);
 	return volume_level;
 }
 
-bool WinVolumeMixer::set_volume(float volume_level)
+bool VolumeMixer::set_volume(float volume_level)
 {
 	if (auto status = m_volume_mixer_impl->AudioEndpoint->SetMasterVolumeLevelScalar(volume_level, nullptr); FAILED(status))
 	{
