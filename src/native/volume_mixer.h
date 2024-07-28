@@ -11,6 +11,6 @@ class VolumeMixer : public IVolumeMixer
 public:
 	VolumeMixer();
 
-	float get_volume() override;
-	bool set_volume(float value) override;
+	int get_volume() override;
+	bool set_volume(int volume_level) override;
 };

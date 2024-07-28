@@ -3,8 +3,8 @@
 class IVolumeMixer
 {
 public:
-	virtual float get_volume() = 0;
-	virtual bool set_volume(float value) = 0;
+	virtual int get_volume() = 0;
+	virtual bool set_volume(int volume_level) = 0;
 
 	virtual ~IVolumeMixer() = default;
 };

@@ -1,6 +1,7 @@
 #include "volume_mixer.h"
 
 #include <stdexcept>
+#include <cmath>
 
 #include <windows.h>
 #include <endpointvolume.h>
@@ -45,16 +46,17 @@ struct NativeVolumeMixerImpl
 
 VolumeMixer::VolumeMixer() : m_volume_mixer_impl{ std::make_unique<NativeVolumeMixerImpl>() }{}
 
-float VolumeMixer::get_volume()
+int VolumeMixer::get_volume()
 {
 	float volume_level{ .0f };
 	m_volume_mixer_impl->AudioEndpoint->GetMasterVolumeLevelScalar(&volume_level);
-	return volume_level;
+	return std::lround(volume_level * 100.f);
 }
 
-bool VolumeMixer::set_volume(float volume_level)
+bool VolumeMixer::set_volume(int volume_level)
 {
-	if (auto status = m_volume_mixer_impl->AudioEndpoint->SetMasterVolumeLevelScalar(volume_level, nullptr); FAILED(status))
+	const auto level{ volume_level * 0.01f };
+	if (auto status = m_volume_mixer_impl->AudioEndpoint->SetMasterVolumeLevelScalar(level, nullptr); FAILED(status))
 	{
 		return false;
 	}
