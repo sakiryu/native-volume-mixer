@@ -21,12 +21,33 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="pipe_channel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pipe_message_handler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="app.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ivolume_mixer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="volume_mixer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pipe_channel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pipe_message_handler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="app.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
