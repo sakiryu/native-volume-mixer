@@ -1,15 +1,17 @@
-const PipeChannel = require('./pipe-channel');
+import PipeChannel from './pipe-channel';
 
-class VolumeMixerService {
+export default class VolumeMixerService {
+    private _pipe: PipeChannel;
+    
     constructor() {
         this._pipe = new PipeChannel('VolumeMixer');
     }
 
-    async closeApp() {
+    async closeApp(): Promise<void> {
         await this._pipe.write('/close_app');
     }
 
-    async setVolume(volume) {
+    async setVolume(volume: number): Promise<void> {
         await this._pipe.write(`/set_volume ${volume.toString()}`);
     }
 
@@ -18,4 +20,3 @@ class VolumeMixerService {
         return await this._pipe.read();
     }
 }
-module.exports = VolumeMixerService;

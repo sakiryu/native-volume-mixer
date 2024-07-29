@@ -1,17 +1,17 @@
-const { app, BrowserWindow, ipcMain  } = require('electron');
-const VolumeMixerService = require('./volume-mixer-service');
-const { spawn } = require('child_process');
-const path = require('path');
+import { app, ipcMain, BrowserWindow, IpcMainInvokeEvent } from 'electron';
+import VolumeMixerService from './volume-mixer-service';
+import { spawn } from 'child_process';
+import path from 'path';
 
 const spawnVolumeMixerProcess = () => {
-    const volumeMixerPath = path.join(__dirname, '..', 'native', 'x64', 'Debug', 'volume_mixer.exe');
+    const volumeMixerPath: string = path.join(__dirname, '..', '..', 'native', 'x64', 'Debug', 'volume_mixer.exe');
 
     const volumeMixerProcess = spawn(volumeMixerPath);
-    volumeMixerProcess.on('close', (code) => {
+    volumeMixerProcess.on('close', (code: number) => {
         console.log(`Child process exited with code ${code}`);
     });
 
-    volumeMixerProcess.on('error', (err) => {
+    volumeMixerProcess.on('error', (err: any) => {
         console.error('Failed to start child process:', err);
     });
 }
@@ -38,8 +38,8 @@ app.whenReady().then(async () => {
         app.quit();
     });
 
-    ipcMain.handle('set-volume', async (_, volume) => await service.setVolume(volume));
-    ipcMain.handle('get-volume', async (_) => await service.getVolume());
+    ipcMain.handle('set-volume', async (_: IpcMainInvokeEvent, volume: number) => await service.setVolume(volume));
+    ipcMain.handle('get-volume', async (_: IpcMainInvokeEvent) => await service.getVolume());
 
     createWindow();
 })
