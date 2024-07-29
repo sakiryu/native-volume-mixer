@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
     <title>Volume Mixer</title>
+    <script src="renderer.js" defer></script>
   </head>
   <body>
-    <h1>This is the UI, I guess...</h1>
+    <h1>Volume <span id="volumeValue"></span></h1>
+    <input type="range" min="0" max="100" class="slider" id="volumeSlider">
+    <button id="muteButton">Mute</button>
   </body>
 </html>
