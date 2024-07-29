@@ -4,12 +4,21 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start":"electron . --trace-warnings",
+    "start": "npm run build && electron dist/main.js --trace-warnings",
+    "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^31.3.0"
+    "@types/electron": "^1.6.10",
+    "@types/node": "^22.0.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "electron": "^31.3.0",
+    "html-loader": "^5.1.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.5.4",
+    "webpack": "^5.93.0",
+    "webpack-cli": "^5.1.4"
   }
 }
