@@ -28,3 +28,19 @@ def find_vs_dev_cmd():
         sys.exit(1)
 
     return None
+
+def build_project(solution_path, configuration):
+    vs_dev_cmd = find_vs_dev_cmd()
+
+    if not vs_dev_cmd:
+        print("Error: Could not find VsDevCmd.bat")
+        sys.exit(1)
+
+    build_command = f'call "{vs_dev_cmd}" && msbuild "{solution_path}" /p:Configuration={configuration}'
+
+    try:
+        result = subprocess.run(build_command, shell=True, check=True)
+        print("Build succeeded." if result.returncode == 0 else "Build failed.")
+    except subprocess.CalledProcessError as e:
+        print("Error during build:", e)
+        sys.exit(e.returncode)
