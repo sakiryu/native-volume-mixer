@@ -2,6 +2,7 @@ const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
+  mode: 'production',
   entry: {
     main: './main.ts',
     preload: './preload.ts',
@@ -33,5 +34,10 @@ module.exports = {
         }
       ]
     })
-  ]
+  ],
+  stats: {
+    all: false,
+    errors: true,
+    warnings: true,
+  },
 };
