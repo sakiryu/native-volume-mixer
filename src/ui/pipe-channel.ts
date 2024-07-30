@@ -1,22 +1,24 @@
-const net = require('net');
+import net, { Socket } from 'net';
 
-class PipeChannel {
-    constructor(pipeName) {
+export default class PipeChannel {
+    private _client: Promise<any>;
+
+    constructor(pipeName: string) {
         this._client = this._connect(`\\\\.\\pipe\\${pipeName}`);
     }
 
-    _connect(pipeName, maxAttempts = 5) {
-        return new Promise((resolve, reject) => {
+    _connect(pipeName: string, maxAttempts: number = 5): Promise<Socket> {
+        return new Promise<Socket>((resolve, reject) => {
             let attempts = 0;
 
-            const tryConnect = () => {
+            const tryConnect = (): void => {
                 attempts++;
                 const client = net.createConnection(pipeName, () => {
                     clearInterval(connectionInterval);
                     resolve(client);
                 });
 
-                client.on('error', (err) => {
+                client.on('error', (err: NodeJS.ErrnoException): void => {
                     if (err.code === 'ENOENT') {
                         console.error('Pipe not found. Retrying...');
                         if (attempts >= maxAttempts) {
@@ -34,11 +36,11 @@ class PipeChannel {
         });
     }
 
-    async write(message) {
+    async write(message: string): Promise<void> {
         const client = await this._client;
 
-        return new Promise((resolve, reject) => {
-            client.write(message, (err) => {
+        return new Promise<void>((resolve, reject) => {
+            client.write(message, (err: NodeJS.ErrnoException) => {
                 if (err) {
                     reject(err);
                     return;
@@ -48,21 +50,21 @@ class PipeChannel {
         });
     }
 
-    async read() {
+    async read(): Promise<string> {
         const client = await this._client;
 
-        return new Promise((resolve, reject) => {
-            const onData = (data) => {
+        return new Promise<string>((resolve, reject) => {
+            const onData = (data: string) => {
                 cleanup();
-                resolve(data.toString('utf8').trim());
+                resolve(data.toString().trim());
             };
 
-            const onError = (err) => {
+            const onError = (err: NodeJS.ErrnoException): void => {
                 cleanup();
                 reject(err);
             };
 
-            const cleanup = () => {
+            const cleanup = (): void => {
                 client.removeListener('data', onData);
                 client.removeListener('error', onError);
             };
@@ -72,4 +74,3 @@ class PipeChannel {
         });
     }
 }
-module.exports = PipeChannel;
