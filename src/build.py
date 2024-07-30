@@ -44,3 +44,21 @@ def build_project(solution_path, configuration):
     except subprocess.CalledProcessError as e:
         print("Error during build:", e)
         sys.exit(e.returncode)
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python build.py <Debug|Release>")
+        sys.exit(1)
+
+    configuration = sys.argv[1]
+    if configuration not in ("Debug", "Release"):
+        print("Error: Configuration must be either 'Debug' or 'Release'.")
+        sys.exit(1)
+
+    solution_file = "native/volume_mixer.sln"
+    
+    if not os.path.exists(solution_file):
+        print(f"Error: Solution file {solution_file} does not exist.")
+        sys.exit(1)
+
+    build_project(solution_file, configuration)
