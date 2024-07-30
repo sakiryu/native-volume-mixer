@@ -8,17 +8,17 @@ export default class PipeChannel {
     }
 
     _connect(pipeName: string, maxAttempts: number = 5): Promise<Socket> {
-        return new Promise((resolve, reject) => {
+        return new Promise<Socket>((resolve, reject) => {
             let attempts = 0;
 
-            const tryConnect = () => {
+            const tryConnect = (): void => {
                 attempts++;
                 const client = net.createConnection(pipeName, () => {
                     clearInterval(connectionInterval);
                     resolve(client);
                 });
 
-                client.on('error', (err: any) => {
+                client.on('error', (err: NodeJS.ErrnoException): void => {
                     if (err.code === 'ENOENT') {
                         console.error('Pipe not found. Retrying...');
                         if (attempts >= maxAttempts) {
@@ -40,7 +40,7 @@ export default class PipeChannel {
         const client = await this._client;
 
         return new Promise<void>((resolve, reject) => {
-            client.write(message, (err: any) => {
+            client.write(message, (err: NodeJS.ErrnoException) => {
                 if (err) {
                     reject(err);
                     return;
@@ -53,13 +53,13 @@ export default class PipeChannel {
     async read(): Promise<string> {
         const client = await this._client;
 
-        return new Promise((resolve, reject) => {
+        return new Promise<string>((resolve, reject) => {
             const onData = (data: string) => {
                 cleanup();
                 resolve(data.toString().trim());
             };
 
-            const onError = (err: any): void => {
+            const onError = (err: NodeJS.ErrnoException): void => {
                 cleanup();
                 reject(err);
             };
