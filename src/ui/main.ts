@@ -3,10 +3,8 @@ import VolumeMixerService from './volume-mixer-service';
 import { spawn } from 'child_process';
 import path from 'path';
 
-const spawnVolumeMixerProcess = (): void => {
-    const volumeMixerPath: string = path.join(__dirname, '..', '..', 'native', 'x64', 'Debug', 'volume_mixer.exe');
-
-    const volumeMixerProcess = spawn(volumeMixerPath);
+const spawnVolumeMixerProcess = (nativeVolumeMixerPath: string): void => {
+    const volumeMixerProcess = spawn(nativeVolumeMixerPath);
     volumeMixerProcess.on('close', (code: number) => {
         console.log(`Child process exited with code ${code}`);
     });
@@ -29,7 +27,14 @@ const createWindow = (): void => {
 }
 
 app.whenReady().then(async (): Promise<void> => {
-    spawnVolumeMixerProcess();
+    
+    const nativeVolumeMixerPath: string = process.argv.slice(2)[0];
+    if(!nativeVolumeMixerPath) {
+        console.error('Path to volume mixer was not provided.')
+        app.quit();
+    }
+    
+    spawnVolumeMixerProcess(nativeVolumeMixerPath);
 
     const service = new VolumeMixerService();
 
