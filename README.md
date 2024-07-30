@@ -1,6 +1,6 @@
 # Electron volume
 
-## Requiremers
+## Requirements
 - Node 20.9
 - Visual Studio 2022
   - MSVC v143 build tools
